@@ -19,9 +19,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 val eSUrl: String = System.getenv("ELASTICSEARCH_PRODUCT_ENDPOINT") ?: "http://localhost:9200/product"
 
-suspend fun searchProduct(product: String?): String {
-
-    val client = HttpClient()
+suspend fun searchProduct(product: String?, client: HttpClient): String {
 
     return client.get("${eSUrl}/_search") {
         body = TextContent(
@@ -54,7 +52,7 @@ fun Application.module(testing: Boolean = false) {
     routing {
 
         get("/product/search/{product}") {
-            call.respondText(searchProduct(call.parameters["product"]), ContentType.Application.Json)
+            call.respondText(searchProduct(call.parameters["product"], client), ContentType.Application.Json)
         }
 
         post("/product/create") {
