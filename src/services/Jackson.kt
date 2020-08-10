@@ -1,4 +1,4 @@
-package com.example
+package com.example.services
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
