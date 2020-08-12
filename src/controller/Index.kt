@@ -1,9 +1,8 @@
 package com.example.controller
 
-import com.example.services.Jackson
-import com.example.eSUrl
-import com.example.searchProduct
+import com.example.services.ESRepository.searchProduct
 import com.example.vo.Product
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.call
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
@@ -15,6 +14,8 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
+
+private val eSUrl: String = System.getenv("ELASTICSEARCH_PRODUCT_ENDPOINT") ?: "http://localhost:9200/product"
 
 fun Route.index() {
 
@@ -28,8 +29,9 @@ fun Route.index() {
     post("/product/create") {
         val post = call.receive<Product>()
         client.post<String>("$eSUrl/_doc") {
-            body = TextContent(Jackson.toJson(post), contentType = ContentType.Application.Json)
+            body =
+                TextContent(jacksonObjectMapper().writeValueAsString(post), contentType = ContentType.Application.Json)
         }
-        call.respondText(Jackson.toJson(post), ContentType.Application.Json)
+        call.respondText(jacksonObjectMapper().writeValueAsString(post), ContentType.Application.Json)
     }
 }
